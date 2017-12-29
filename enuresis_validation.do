@@ -1,6 +1,6 @@
-*generate agedry_since10 = .
-*generate agedry_wetlast6 = .
-*generate wetage_wetlast6 = .
+generate agedry_since10 = .
+generate agedry_wetlast6 = .
+generate wetage_wetlast6 = .
 
 replace agedry_since10 = 1 if agedry<4 & since10==2 
 
