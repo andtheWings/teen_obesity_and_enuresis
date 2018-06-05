@@ -1,7 +1,118 @@
+**Making sure missing variables are consistently filled in for wetX variables**
+replace wet11 = 2 if wet11==. & age>10 & since10==1 & wetlast6==1
+replace wet12 = 2 if wet12==. & age>11 & since10==1 & wetlast6==1
+replace wet13 = 2 if wet13==. & age>12 & since10==1 & wetlast6==1
+replace wet14 = 2 if wet14==. & age>13 & since10==1 & wetlast6==1
+replace wet15 = 2 if wet15==. & age>14 & since10==1 & wetlast6==1
+replace wet16 = 2 if wet16==. & age>15 & since10==1 & wetlast6==1
+
+**Constructing enuretic variable**
 generate enuretic = .
-replace enuretic = 1 if agedry<5 & wetlast6==1
-replace enuretic = 2 if agedry==5 | wetlast6>1
+replace enuretic = 1 if wetlast6==1
+replace enuretic = 2 if wetlast6>1 & wetlast6<6
+replace enuretic = 1 if wetlast6==. & age==11 & wet11==2
+replace enuretic = 2 if wetlast6==. & age==11 & wet11==1
+replace enuretic = 1 if wetlast6==. & age==12 & wet12==2
+replace enuretic = 2 if wetlast6==. & age==12 & wet12==1
+replace enuretic = 1 if wetlast6==. & age==13 & wet13==2
+replace enuretic = 2 if wetlast6==. & age==13 & wet13==1
+replace enuretic = 1 if wetlast6==. & age==14 & wet14==2
+replace enuretic = 2 if wetlast6==. & age==14 & wet14==1
+replace enuretic = 1 if wetlast6==. & age==15 & wet15==2
+replace enuretic = 2 if wetlast6==. & age==15 & wet15==1
+replace enuretic = 1 if wetlast6==. & age==16 & wet16==2
+replace enuretic = 2 if wetlast6==. & age==16 & wet16==1
 label values enuretic noyes
+
+generate everenuretic = enuretic
+replace everenuretic = 2 if age==12 & wet11==1
+replace everenuretic = 2 if age==13 & wet11==1 
+replace everenuretic = 2 if age==13 & wet12==1
+replace everenuretic = 2 if age==14 & wet11==1 
+replace everenuretic = 2 if age==14 & wet12==1
+replace everenuretic = 2 if age==14 & wet13==1 
+replace everenuretic = 2 if age==15 & wet11==1
+replace everenuretic = 2 if age==15 & wet12==1
+replace everenuretic = 2 if age==15 & wet13==1
+replace everenuretic = 2 if age==15 & wet14==1
+replace everenuretic = 2 if age==16 & wet11==1
+replace everenuretic = 2 if age==16 & wet12==1
+replace everenuretic = 2 if age==16 & wet13==1
+replace everenuretic = 2 if age==16 & wet14==1
+replace everenuretic = 2 if age==16 & wet15==1
+replace everenuretic = 2 if age>16 & wet11==1
+replace everenuretic = 2 if age>16 & wet12==1
+replace everenuretic = 2 if age>16 & wet13==1
+replace everenuretic = 2 if age>16 & wet14==1
+replace everenuretic = 2 if age>16 & wet15==1
+replace everenuretic = 2 if age>16 & wet16==1
+label values everenuretic noyes
+
+**Checking for consistency of bedwetting answers**
+
+list id age enuretic agedry since10 wetlast6
+*Subject 27 said they were consistetly dry at age 5-7 but still wet the bed at least once per year since age 10
+*  This is technically a valid response depending on interpretation
+
+list id age if wet11==1 & wet12==2
+list id age if wet11==2 & wet12==1
+list id age if wet11==2 & wet13==1
+list id age if wet11==2 & wet14==1
+list id age if wet11==2 & wet15==1
+list id age if wet11==2 & wet16==1
+list id age if wet12==2 & wet13==1
+list id age if wet12==2 & wet14==1
+list id age if wet12==2 & wet15==1
+list id age if wet12==2 & wet16==1
+list id age if wet13==2 & wet14==1
+list id age if wet13==2 & wet15==1
+list id age if wet13==2 & wet16==1
+list id age if wet14==2 & wet15==1
+list id age if wet14==2 & wet16==1
+list id age if wet15==2 & wet16==1
+*No one reported regression back into wetting the bed once they stopped at a younger age
+
+list id age agedry wetlast6 enuretic if agedry<4 & wetlast6>1
+*Again, subject 27 said they were consistetly dry at age 5-7 but still wet the bed 3-4 nights per month in the last 6 months
+*  This too is technically a valid response, but I will drop this subject in sensitivity analysis
+
+list id age agedry wetlast6 enuretic if agedry>3 & wetlast6==1
+*Responses for subjects 6, 14, 21, 172, 184, 193, 196, 197, and 199 are logically valid
+*Subject 18 reported still not consistently dry at night, but never wet the bed in the last 6 months
+*  Marking enuretic value as missing for subject 18
+replace enuretic = . if id==18
+
+list id age wet11 wetlast6 enuretic if age==11 & wet11==1 & wetlast6==1
+list id age wet11 wetlast6 enuretic if age==11 & wet11==2 & wetlast6>1
+list id age wet12 wetlast6 enuretic if age==12 & wet12==1 & wetlast6==1
+list id age wet12 wetlast6 enuretic if age==12 & wet12==2 & wetlast6>1
+*Subject 166 did not wet the bed at age 12 and is listed as not enuretic because he is 12
+replace enuretic=1 if id==166
+list id age wet13 wetlast6 enuretic if age==13 & wet13==1 & wetlast6==1
+*Subject 28 is age 13, wet the bed more than one time at age 13, but not in the last six months
+*  Technically valid, but I will drop in sensitivity analysis
+list id age agedry wet13 wetlast6 enuretic if age==13 & wet13==2 & wetlast6>1
+* Subject 22 is 13, did not wet the bed more than once at age 13, but wet the bed 3-4 nights per month in the last six months
+*  Setting enuretic value as missing for subject 22
+replace enuretic = . if id==22
+list id age wet14 wetlast6 enuretic if age==14 & wet14==1 & wetlast6==1
+list id age wet14 wetlast6 enuretic if age==14 & wet14==2 & wetlast6>1
+list id age wet15 wetlast6 enuretic if age==15 & wet15==1 & wetlast6==1
+list id age wet15 wetlast6 enuretic if age==15 & wet15==2 & wetlast6>1
+list id age wet16 wetlast6 enuretic if age==16 & wet16==1 & wetlast6==1
+list id age agedry wet16 wetlast6 enuretic if age==16 & wet16==2 & wetlast6>1
+*Subject 1 is age 16, Did not wet the bed more than once at age 16, but wet the bed 1-2 nights per week in the last six months
+*  Setting enuretic value as missing for subject 1
+replace enuretic = . if id==1
+
+list id age wet11 wet12 wetlast6 everenuretic if age==12 & wetlast6==1 & wet11==1
+list id age wet12 wet13 wetlast6 everenuretic if age==13 & wetlast6==1 & wet12==1
+*As commented above, subject 28 is age 13, wet the bed more than one time at age 13, but not in the last six months
+*  Technically valid, but I will drop in sensitivity analysis
+list id age wet13 wet14 wetlast6 everenuretic if age==14 & wetlast6==1 & wet13==1
+list id age wet14 wet15 wetlast6 everenuretic if age==15 & wetlast6==1 & wet14==1
+list id age wet15 wet16 wetlast6 everenuretic if age==16 & wetlast6==1 & wet15==1
+list id age wet16 wetlast6 everenuretic if age==17 & wetlast6==1 & wet16==1
 
 generate _feeldown = feeldown
 generate _anhedonia = anhedonia
